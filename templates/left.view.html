@@ -1,0 +1,5 @@
+<div [ngClass]="{'dual-pane': dualPane}">
+    <div [ngClass]="{'dual-pane-left': dualPane, 'single-pane-left': !dualPane}"><room-list (room)="object" (onRoomSelected)="onRoomSelected($event)" (window:resize)="handleResize($event)"></room-list></div>
+    <div *ngIf="dualPane" class="dual-pane-middle"></div>
+    <div *ngIf="dualPane" class="dual-pane-right"><right-view [type]="selectedObjectType" [object]="selectedObject"></right-view></div>
+</div>

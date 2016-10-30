@@ -1,0 +1,31 @@
+<div class="right-view room-detail">
+    <div *ngIf="room">
+        <div class="title1">{{room.Name}} {{room.Id}}</div>
+        <div class="info-pair">Current temp: <span class="">{{room.TempCurrent}}</span>°C</div>
+        <div class="info-pair">Target temp: {{room.TempTarget}}°C</div>
+        <div class="info-pair">Min temp: {{room.TempMin}}°C</div>
+        <div class="info-pair">Max temp: {{room.TempMax}}°C</div>
+
+        <div *ngIf="showEvents">
+            <week-timer [subject]="room" [parent]="null" [viewLevel]="2"></week-timer>
+        </div>
+
+        <div class="section2">
+            <div class="title2">Sensors</div>
+            <div *ngFor="let sensor of room.Sensors" class="section3">
+                <div class="title3">{{sensor.Name}}</div>
+                <div class="info-pair">Current temp: {{sensor.Reading}}°C</div>
+                <div class="info-pair">Last read: {{sensor.LastRead | date: 'dd/MM/yyyy HH:mm'}}</div>
+            </div>
+        </div>
+        <div class="section2">
+            <div class="title2">Heaters</div>
+            <div *ngIf="room.Heaters.length==0" class="indent1">none</div>
+            <div *ngFor="let heater of room.Heaters" class="section3">
+                <div class="title3">{{heater.Name}}</div>
+                <div class="info-pair">State: {{heater.State ? 'on' : 'off'}}</div>
+                <week-timer [subject]="heater" [parent]="room" [viewLevel]="4"></week-timer>
+            </div>
+        </div>
+    </div>
+</div>

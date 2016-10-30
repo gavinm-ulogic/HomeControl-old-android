@@ -1,0 +1,5 @@
+<!--<h1>Heating</h1>-->
+<!--<div *ngFor="let room of heatingService.theRooms" class="list-item" [routerLink]="'room/' + room.Id">-->
+<div *ngFor="let room of heatingService.theRooms" class="list-item" (click)="onSelect(room)">
+    <div class="temperature {{getTempClass(room)}}">{{room.Summary}}</div><div class="list-text">{{room.Name}}</div>
+</div>

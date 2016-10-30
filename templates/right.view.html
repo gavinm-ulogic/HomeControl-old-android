@@ -1,0 +1,7 @@
+<!--<div *ngIf="object">{{object.Name}}</div>-->
+<div class="right-view">
+    <div *ngIf="!dualPane" class="nav-back" (click)="handleBack()">back</div>
+    <div *ngIf="type=='room'">
+        <room-detail [room]="object"></room-detail>
+    </div>
+</div>
