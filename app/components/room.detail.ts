@@ -4,7 +4,7 @@ import { HeatingService } from '../services/heating.service';
 
 @Component({
     selector: 'room-detail',
-    templateUrl: './templates/room.detail.html'
+    templateUrl: './app/templates/room.detail.html'
 })
 export class RoomDetail implements OnInit, OnChanges {
     @Input() room: any;

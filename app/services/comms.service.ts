@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 // import { Http, Headers, RequestOptions, Response } from '@angular/http';
-import { Http } from '@angular/http';
+import { Http, Response } from '@angular/http';
+import {Observable} from 'rxjs/Rx';
 import 'rxjs/add/operator/toPromise';
 import { Logger } from './logger.service';
 
@@ -32,6 +33,14 @@ export class CommsService {
                 .toPromise()
                 .then(this.handleResponse)
                 .catch(this.handleError);
+    }
+
+    getFromServerO(url: string): Observable<any[]> {
+        let fullUrl = this.BASE_URL + url;
+
+        return this.http.get(fullUrl)
+                .map((res: Response) => res.json())
+                .catch((error:any) => Observable.throw(error.json().error || 'Server error'));
     }
 
     postToServer(url: string, item: any) {

@@ -2,13 +2,35 @@ import { Component, Output, EventEmitter } from '@angular/core';
 import { OnInit } from '@angular/core';
 import { Logger } from '../services/logger.service';
 import { HeatingService } from '../services/heating.service';
+import { Room } from '../models/room';
 
 @Component({
     selector: 'room-list',
-    templateUrl: './templates/room.list.html'
+    templateUrl: './app/templates/room.list.html'
 })
 export class RoomList implements OnInit {
     @Output() onRoomSelected = new EventEmitter<any>();
+
+    public roomList: Room[];
+
+    private loadRoomList = function() {
+        this.heatingService.getRooms()
+            .subscribe(
+                (rooms: Room[]) => this.roomList = rooms, //Bind to view
+                (err: any) => {
+                    // Log errors if any
+                    this.logger.log(err);
+                });
+    };
+
+//   getHeroes() {
+//     this.heroService.getHeroes()
+//                      .subscribe(
+//                        heroes => this.heroes = heroes,
+//                        error =>  this.errorMessage = <any>error);
+//   }
+
+
 
     constructor(
         private logger: Logger,
@@ -17,7 +39,15 @@ export class RoomList implements OnInit {
 
     ngOnInit() {
         this.logger.log('Room List');
-        this.heatingService.refreshData();
+
+        this.loadRoomList();
+        // this.heatingService.getRooms()
+
+        //     .map((res: Room[]) => {
+        //         this.roomList = res;
+        //     })
+        //this.heatingService.refreshData();
+
     }
 
     public getTempClass = function(room: any) {

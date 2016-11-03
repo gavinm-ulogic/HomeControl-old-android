@@ -2,10 +2,11 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { OnInit } from '@angular/core';
 import { Logger } from '../services/logger.service';
 import { HeatingService } from '../services/heating.service';
+import { TimedEvent } from '../models/timed.event';
 
 @Component({
     selector: 'week-timer',
-    templateUrl: './templates/week.timer.html'
+    templateUrl: './app/templates/week.timer.html'
 })
 export class WeekTimer implements OnInit {
     @Input() subject: any;
@@ -15,11 +16,15 @@ export class WeekTimer implements OnInit {
 
     public subjectGroup: any = null;
 
-    public subjectEvents: any[] = null;
-    public subjectDayList: number[] = null;
-    public subjectGroupEvents: any[] = null;
-    public parentEvents: any[] = null;
-    public parentGroupEvents: any[] = null;
+    public subjectDayList: number[] = [];
+    public subjectGroupDayList: number[] = [];
+    public parentDayList: number[] = [];
+    public parentGroupDayList: number[] = [];
+
+    public subjectEvents: TimedEvent[] = [];
+    public subjectGroupEvents: TimedEvent[] = [];
+    public parentEvents: TimedEvent[] = [];
+    public parentGroupEvents: TimedEvent[] = [];
 
     public newEvent: string = '';
     public newEventFilter = 0;
@@ -51,11 +56,31 @@ export class WeekTimer implements OnInit {
         return newList;
     };
 
-    private getDayLists = function() {
-        this.subjectDayList = this.getOneDayList(this.subjectEvents);
-        this.subjectGroupDayList = this.getOneDayList(this.subjectGroupEvents);
-        this.parentDayList = this.getOneDayList(this.parentEvents);
-        this.parentGroupDayList = this.getOneDayList(this.parentGroupEvents);
+    // private getDayLists = function() {
+    //     this.subjectDayList = this.getOneDayList(this.subjectEvents);
+    //     this.subjectGroupDayList = this.getOneDayList(this.subjectGroupEvents);
+    //     this.parentDayList = this.getOneDayList(this.parentEvents);
+    //     this.parentGroupDayList = this.getOneDayList(this.parentGroupEvents);
+    // };
+
+
+    private getEventSet = function(subjectId: number, isGroup: boolean, eventSet: TimedEvent[], dayList: number[]) {
+
+        if (!eventSet) {
+            let ttttte = 1;
+        }
+
+        self = this;
+        this.heatingService.getSubjectEvents(subjectId, isGroup)
+            .subscribe(
+                (events: TimedEvent[]) => {
+                    eventSet.push.apply(eventSet, events)
+                    dayList.push.apply(dayList, this.getOneDayList(eventSet));
+                },
+                (err: any) => {
+                    // Log errors if any
+                    this.logger.log(err);
+                });
     };
 
     ngOnInit() {
@@ -65,23 +90,20 @@ export class WeekTimer implements OnInit {
     ngOnChanges() {
         this.logger.log('WeekTimer OnChanges');
         if (this.subject) {
-            this.subjectEvents = this.heatingService.getSubjectEvents(this.subject.Id, false);
-            if (this.subject.GroupId) { this.subjectGroupEvents = this.heatingService.getSubjectEvents(this.subject.GroupId, true); }
-
-        }
-        if (this.parent) {
-            this.parentEvents = this.heatingService.getSubjectEvents(this.parent.Id, false);
-            if (this.parent.GroupId) { this.parentGroupEvents = this.heatingService.getSubjectEvents(this.parent.GroupId, true); }
+            this.getEventSet(this.subject.Id, false, this.subjectEvents, this.subjectDayList);
         }
 
-        if (this.subject.Group) {
-            this.subjectGroup = this.subject.Group;
-        } else if (this.subject.GroupId) {
-            this.subjectGroup = this.heatingService.getGroup(this.subject.GroupId);
+        if (this.subject.GroupId) {
+            this.getEventSet(this.subject.GroupId, true, this.subjectGroupEvents, this.subjectGroupDayList);
         }
+
+        // if (this.parent) {
+        //     this.getEventSet(this.subject.Id, false, this.parentEvents, this.subjectDayList);
+        // }
+
         this.newEvent = '';
 
-        this.getDayLists();
+        //this.getDayLists();
         // this.heatingService.refreshData();
     }
 

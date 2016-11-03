@@ -2,5 +2,6 @@
   "port": 3333,
   "files": ["./**/*.{html,htm,css,js}"],
   "server": { "baseDir": "./" },
-  "browser": "chrome"
+  "browser": "chrome",
+  "injectionChanges": true
 }

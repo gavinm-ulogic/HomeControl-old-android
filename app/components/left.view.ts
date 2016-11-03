@@ -5,7 +5,7 @@ import { Logger } from '../services/logger.service';
 
 @Component({
     selector: 'left-view',
-    templateUrl: './templates/left.view.html'
+    templateUrl: './app/templates/left.view.html'
 })
 export class LeftView implements OnInit {
     @Input() objectType: string;

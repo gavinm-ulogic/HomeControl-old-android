@@ -212,9 +212,12 @@
 
 .nav-back {
   position: absolute;
-  right: 50;
-  top: 20;
-  z-index: 100; }
+  width: 100%;
+  text-align: right;
+  padding: 10px;
+  z-index: 100;
+  font-size: 2em;
+  color: gold; }
 
 .list-item {
   display: table;

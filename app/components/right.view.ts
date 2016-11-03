@@ -4,16 +4,24 @@ import { Location } from '@angular/common';
 import {  } from '@angular/core';
 import { Logger } from '../services/logger.service';
 import { HeatingService } from '../services/heating.service';
+import { Room } from '../models/room';
 
 @Component({
     selector: 'right-view',
-    templateUrl: './templates/right.view.html'
+    templateUrl: './app/templates/right.view.html'
 })
 export class RightView implements OnInit {
     @Input() type: string;
     @Input() object: any;
 
     public dualPane: boolean;
+
+    private loadRoom = function(roomId: number) {
+        this.heatingService.getRoom(roomId)
+            .subscribe(
+                (room: Room) => this.object = room,
+                (err: any) => { this.logger.log(err); });
+    };
 
     constructor(
         private route: ActivatedRoute,
@@ -31,7 +39,7 @@ export class RightView implements OnInit {
             let objectId: number = parseInt(this.route.snapshot.params['id'], 10);
 
             this.type = objectType;
-            this.object = this.heatingService.getRoom(objectId);
+            this.loadRoom(objectId);
         }
     }
 

@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 import { HttpModule } from '@angular/http';
 import { FormsModule }   from '@angular/forms';
 import { DatePipe } from '@angular/common';
@@ -26,6 +27,6 @@ import { AppRoutingModule } from './app.routing.module';
   declarations: [ HeatClassPipe, AppComponent, WeekTimer, DayTimer, LeftView, RightView, RoomList, RoomDetail ],
   imports: [ BrowserModule, HttpModule, FormsModule, AppRoutingModule ],
   bootstrap: [ AppComponent ],
-  providers: [ DatePipe, Logger, CommsService, HeatingService ]
+  providers: [ {provide: LocationStrategy, useClass: HashLocationStrategy}, DatePipe, Logger, CommsService, HeatingService ]
 })
 export class AppModule { }

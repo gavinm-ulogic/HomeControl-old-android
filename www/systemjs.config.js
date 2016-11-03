@@ -1,12 +1,14 @@
-/**
- * System configuration for Angular 2 samples
- * Adjust as necessary for your application needs.
- */
 (function(global) {
+
+  var meta = {
+    './app/app-bundle.js': {
+      format: 'global'
+    }
+  };
 
   // map tells the System loader where to look for things
   var map = {
-    'app':                        'js'
+    'app':                        'app'
   };
 
   // packages tells the System loader how to load when no filename and/or no extension

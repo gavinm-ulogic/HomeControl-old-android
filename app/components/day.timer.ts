@@ -6,7 +6,7 @@ import { DatePipe } from '@angular/common';
 
 @Component({
     selector: 'day-timer',
-    templateUrl: './templates/day.timer.html'
+    templateUrl: './app/templates/day.timer.html'
 })
 export class DayTimer implements OnInit {
     @Input() periods: any[];
@@ -109,6 +109,7 @@ export class DayTimer implements OnInit {
     };
 
     public isValidPeriod(period: any) {
+        if (!period || !period.TimeStart) { return false; }
         let start: Date = new Date(period.TimeStart);
         if (!this.newEvent && this.dayFilter && start.getFullYear() !== this.dayFilter) { return false; }
         return true;
@@ -153,6 +154,7 @@ export class DayTimer implements OnInit {
                 period = {};
                 this.selectedPeriod = null;
             }
+            this.logger.log('DayTimer.periodDeleteIfEmpty period deleted');
             return true;
         }
         return false;
@@ -214,6 +216,7 @@ export class DayTimer implements OnInit {
         if (formatted.indexOf(' ') === 6) { formatted = '00' + formatted; } period.TimeStartStr = formatted;
         formatted = this.datePipe.transform(period.TimeEnd, 'yyyyMMdd HH:mm:ss');
         if (formatted.indexOf(' ') === 6) { formatted = '00' + formatted; } period.TimeEndStr = formatted;
+        period.Type = 1;
         return this.heatingService.saveEvent(period);
     };
 

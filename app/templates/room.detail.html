@@ -24,6 +24,7 @@
             <div *ngFor="let heater of room.Heaters" class="section3">
                 <div class="title3">{{heater.Name}}</div>
                 <div class="info-pair">State: {{heater.State ? 'on' : 'off'}}</div>
+                <div class="info-pair">Relay: {{heater.RelayAddress}}</div>
                 <week-timer [subject]="heater" [parent]="room" [viewLevel]="4"></week-timer>
             </div>
         </div>

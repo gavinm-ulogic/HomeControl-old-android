@@ -5,7 +5,7 @@ import { HeatingService } from './services/heating.service';
 
 @Component({
     selector: 'my-app',
-    templateUrl: './templates/app.html'
+    templateUrl: './app/templates/app.html'
 })
 export class AppComponent implements OnInit {
     public selectedObjectType: string = 'room';
