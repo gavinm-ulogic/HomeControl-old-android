@@ -13,9 +13,9 @@ import { CommsService } from './comms.service';
 
 @Injectable()
 export class HeatingService {
-    public theGroups: EventGroup[] = null;
-    public theRooms: Room[] = null;
-    public theEvents: TimedEvent[] = null;
+    public theGroups: EventGroup[] = [];
+    public theRooms: Room[] = [];
+    public theEvents: TimedEvent[] = [];
 
     constructor(private commsService: CommsService, private logger: Logger, private http: Http) {
         logger.log('HeatingService');
@@ -68,66 +68,39 @@ export class HeatingService {
         return Observable.throw(errMsg);
     }
 
-    public getRooms = function(): Observable<Room[]> {
-        return this.http.get(Environment.API_BASE + 'rooms')
+    private getObjectListFromServer = function(objectList: any[], url: string, dataProcessor: Function) {
+        let self = this;
+        return self.http.get(Environment.API_BASE + url)
                 .map((res: Response) => {
-                    this.theRooms = res.json();
-                    for (let i = 0; i < this.theRooms.length; i++) {
-                        this.theRooms[i].Summary = (this.theRooms[i].TempCurrent === -999) ? '' : this.theRooms[i].TempCurrent + '°C';
-                        //this.theRooms[i].Group = this.getGroup(this.theRooms[i].GroupId);
-                    }
-                    return this.theRooms || {};
+                    let theList = res.json();
+                    objectList.length = 0;
+                    objectList.push.apply(objectList, theList);
+                    if (dataProcessor) { dataProcessor.call(self, objectList); }
+                    return objectList || {};
                 })
                 .catch(this.handleError);
+    };
+
+    private processRoomData = function(objectList: any[]) {
+        if (!objectList) { return null; }
+        for (let i = 0; i < objectList.length; i++) {
+            objectList[i].Summary = (objectList[i].TempCurrent === -999) ? '' : objectList[i].TempCurrent + '°C';
+        }
+        return objectList;
+    };
+
+    public getRooms = function(): Observable<Room[]> {
+        return this.getObjectListFromServer(this.theRooms, 'rooms', this.processRoomData);
     };
 
     public getGroups = function(): Observable<Room[]> {
-        return this.http.get(Environment.API_BASE + 'rooms')
-                .map((res: Response) => {
-                    this.theGroups = res.json();
-                    return this.theGroups || {};
-                })
-                .catch(this.handleError);
+        return this.getObjectListFromServer(this.theGroups, 'groups');
     };
 
     public getEvents = function(): Observable<Room[]> {
-        return this.http.get(Environment.API_BASE + 'events')
-                .map((res: Response) => {
-                    this.theEvents = res.json();
-                    return this.theEvents || {};
-                })
-                .catch(this.handleError);
+        return this.getObjectListFromServer(this.theEvents, 'events');
     };
 
-    public getRoom = function (roomId: number, noCache: boolean) {
-        if (!roomId) { return null; }
-
-        let self = this;
-        let getRoomFromList = function(roomId: number) {
-            for (let i = 0; i < self.theRooms.length; i++) {
-                if (self.theRooms[i].Id === roomId) {
-                    return self.theRooms[i];
-                }
-            }
-            return null;
-        };
-
-        if (!noCache && self.theRooms) {
-            let retOb = new Observable<Room[]>((subscriber: Subscriber<Room[]>) => {
-                self.logger.log('HeatingService getRoom: got from cache');
-                subscriber.next(getRoomFromList(roomId));
-                subscriber.complete();
-            });
-            return retOb;
-        } else {
-            return self.getRooms()
-                    .map((res: Response) => {
-                        self.logger.log('HeatingService getRoom: got from server');
-                        return getRoomFromList(roomId);
-                    })
-                    .catch(self.handleError);
-        }
-    };
 
     private filterSubjectEvents = function(subjectId: number, isGroup: boolean) {
         let retArray: Event[] = [];
@@ -140,7 +113,7 @@ export class HeatingService {
     };
 
     public getSubjectEvents = function(subjectId: number, isGroup: boolean, noCache: boolean): Observable<TimedEvent[]> {
-        if (!noCache && this.theEvents) {
+        if (!noCache && this.theEvents && this.theEvents.length > 0) {
             let retOb = new Observable<TimedEvent[]>((subscriber: Subscriber<TimedEvent[]>) => {
                 subscriber.next(this.filterSubjectEvents(subjectId, isGroup));
                 subscriber.complete();
@@ -155,161 +128,101 @@ export class HeatingService {
         }
     };
 
-    // public getRoom = function (roomId: number) {
-    //     if (roomId) {
-    //         let self = this;
-    //         for (let i = 0; i < self.theRooms.length; i++) {
-    //             if (self.theRooms[i].Id === roomId) {
-    //                 return self.theRooms[i];
-    //             }
-    //         }
-    //     }
-    //     return null;
-    // };
-
-    // public getSubjectEvents = function(subjectId: number, isGroup: boolean, noCache: boolean): Observable<TimedEvent[]> {
-    //     if (!noCache && this.theEvents) {
-    //         let retOb = new Observable<TimedEvent[]>((subscriber: Subscriber<TimedEvent[]>) => {
-    //             subscriber.next(this.filterSubjectEvents());
-    //             subscriber.complete();
-    //         });
-    //         return retOb;
-    //     } else {
-    //         return this.http.get(Environment.API_BASE + 'events')
-    //                 .map((res: Response) => {
-    //                     this.theEvents = res.json();
-    //                     return this.filterSubjectEvents(subjectId, isGroup);
-    //                 })
-    //                 .catch(this.handleError);
-    //     }
-    // };
-
-
-    // public getSubjectEvents = function (subjectId: number, isGroup: boolean) {
-    //     let retArray: any[] = [];
-    //     if (subjectId) {
-    //         let self = this;
-    //         for (let i = 0; i < self.theEvents.length; i++) {
-    //             if (self.theEvents[i].SubjectId === subjectId && self.theEvents[i].IsGroup === isGroup) {
-    //                 retArray.push(self.theEvents[i]);
-    //             }
-    //         }
-    //     }
-    //     return retArray;
-    // };
-
-    // public refreshRoomsO = function () {
-    //     this.commsService.getFromServerO('rooms')
-    //         .subscribe(data => {
-    //             this.theRooms = data;
-    //             for (let i = 0; i < this.theRooms.length; i++) {
-    //                 this.theRooms[i].Summary = (this.theRooms[i].TempCurrent === -999) ? '' : this.theRooms[i].TempCurrent + '°C';
-    //                 this.theRooms[i].Group = this.getGroup(this.theRooms[i].GroupId);
-    //             }
-    //         }, err => {
-    //             console.log(err);
-    //         });
-    // };
-
-
-    // public refreshGroups = function () {
-    //      return this.commsService.getFromServer('groups').then((data: any[]) => {
-    //         this.theGroups = data;
-    //         return;
-    //     });
-    // };
-
-    // public refreshRooms = function () {
-    //     return this.commsService.getFromServer('rooms').then((data: any[]) => {
-    //         this.theRooms = data;
-    //         for (let i = 0; i < this.theRooms.length; i++) {
-    //         this.theRooms[i].Summary = (this.theRooms[i].TempCurrent === -999) ? '' : this.theRooms[i].TempCurrent + '°C';
-    //         this.theRooms[i].Group = this.getGroup(this.theRooms[i].GroupId);
-    //         }
-    //         return;
-    //     });
-    // };
-
-    // public refreshRoom = function (room: any) {
-    //     return this.commsService.getFromServer('room/' + room.Id).then((data: any[]) => {
-    //         room = data;
-    //         return;
-    //     });
-    // };
-
-
-    // public refreshEvents = function () {
-    //     return this.commsService.getFromServer('events').then((data: any[]) => {
-    //         this.theEvents = data;
-    //         return;
-    //     });
-    // };
-
-    public getGroup = function (groupId: number) {
-        if (!this.theGroups) { return ''; }
-        if (groupId) {
-            for (let i = 0; i < this.theGroups.length; i++) {
-                if (this.theGroups[i].Id === groupId) {
-                    return this.theGroups[i];
-                }
+    private getObjectFromList = function(objectList: any, objectId: number) {
+        if (!objectList) { return null; }
+        for (let i = 0; i < objectList.length; i++) {
+            if (objectList[i].Id === objectId) {
+                return objectList[i];
             }
         }
         return null;
     };
 
+    private getObject = function (objectGetter: any, objectList: any[], objectId: number, noCache: boolean) {
+        if (!objectId) { return null; }
 
-    public getEvent = function (eventId: number) {
-        if (eventId) {
-            let self = this;
-            for (let i = 0; i < self.theEvents.length; i++) {
-                if (self.theEvents[i].Id === eventId) {
-                    return self.theEvents[i];
-                }
-            }
+        let self = this;
+        if (!noCache && objectList && objectList.length > 0) {      // should be a better test for unused list
+            let retOb = new Observable<any[]>((subscriber: Subscriber<any[]>) => {
+                self.logger.log('HeatingService getObject: got from cache: ' + objectId);
+                subscriber.next(this.getObjectFromList(objectList, objectId));
+                subscriber.complete();
+            });
+            return retOb;
+        } else {
+            return objectGetter.apply(self)
+                    .map((res: Response) => {
+                        self.logger.log('HeatingService getObject: got from server: ' + objectId);
+                        return this.getObjectFromList(objectList, objectId);
+                    })
+                    .catch(self.handleError);
         }
-        return null;
-    };
+    }
+
+    public getRoom = function (roomId: number, noChache: boolean) {
+        return this.getObject(this.getRooms, this.theRooms, roomId, noChache);
+    }
+
+    public getGroup = function (groupId: number, noChache: boolean) {
+        return this.getObject(this.getGroups, this.theGroups, groupId, noChache);
+    }
+
+    public getEvent = function (eventId: number, noChache: boolean) {
+        return this.getObject(this.getEvents, this.theEvents, eventId, noChache);
+    }
+
+    private handleError2(error: any): Promise<any> {
+        console.error('An error occurred', error);
+        // this.logger.error('An error occurred:' + error);
+        return Promise.reject(error.message || error);
+    }
+
+    private handleResponse(response: any): Promise<any> {
+        let test: any = response.json();
+        return Promise.resolve(test);
+    }
+
+
+    private saveObject = function (object: any, url: string) {
+        if (!object) { return null; }
+        let self = this;
+
+        let headers = new Headers({ 'Content-Type': 'application/json' }); // ... Set content type to JSON
+        let options = new RequestOptions({ headers: headers }); // Create a request option
+
+        if (object.Id > 0) {
+            return self.http.put(Environment.API_BASE + url, object, options)
+                    .map((res: Response) => {
+                        object = res.json();
+                        return object || {};
+                    })
+                    .catch(self.handleError);
+        } else {
+            return this.http.post(Environment.API_BASE + url, object, options)
+                .map((res: Response) => {
+                    object = res.json();
+                    return object;
+            }, function (error: any) {
+                this.logger.log(error);
+            });
+        }
+    }
+
+    private deleteObject = function (objectId: number, url: string) {
+        if (!objectId) { return null; }
+        return this.http.delete(Environment.API_BASE + url + '/' + objectId)
+            .map((res: Response) => {
+                   return;
+            }, function (error: any) {
+                this.logger.log(error);
+            });
+    }
 
     public saveEvent = function (eventObj: any) {
-        if (eventObj.Id > 0) {
-            return this.commsService.putToServer('events', eventObj).then((result: any) => {
-                return;
-            }, function (error: any) {
-                this.logger.log(error);
-            });
-        } else {
-            return this.commsService.postToServer('events', eventObj).then((result: any) => {
-                eventObj.Id = result.Id;
-                return;
-            }, function (error: any) {
-                this.logger.log(error);
-            });
-        }
+        return this.saveObject(eventObj, 'events');
     };
 
-    public deleteEvent = function (eventId: number) {
-        return this.commsService.deleteFromServer('events/' + eventId).then((result: any) => {
-            return;
-        }, function (error: any) {
-            this.logger.log(error);
-        });
+    public deleteEvent = function (eventObj: any) {
+        return this.deleteObject(eventObj.Id, 'events');
     };
-
-        // let refreshTimer = $interval(function () {
-        //     self.refreshData();
-        // }, 40000);
-
-    // public getSubjectEvents = function (subjectId: number, isGroup: boolean) {
-    //     let retArray: any[] = [];
-    //     if (subjectId) {
-    //         let self = this;
-    //         for (let i = 0; i < self.theEvents.length; i++) {
-    //             if (self.theEvents[i].SubjectId === subjectId && self.theEvents[i].IsGroup === isGroup) {
-    //                 retArray.push(self.theEvents[i]);
-    //             }
-    //         }
-    //     }
-    //     return retArray;
-    // };
-
 }

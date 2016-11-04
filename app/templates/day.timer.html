@@ -20,9 +20,9 @@
                     class="period" [ngClass]="{'period-selected' : period == selectedPeriod, 'period-new': period.Id <= 0}"
                     (tap)="onTapPeriod($event, period)"
                     (panstart)="onDragPeriod($event, period)" (pan)="onDragPeriod($event, period)" (panend)="onDragPeriod($event, period)"></rect>
-                <circle *ngIf="isValidPeriod(period) && period == selectedPeriod" [attr.cx]="getPeriodStartX(period)" cy="25" r="14"
+                <circle *ngIf="selectedPeriod && isValidPeriod(period) && period == selectedPeriod" [attr.cx]="getPeriodStartX(period)" cy="25" r="14"
                     (panstart)="onDragTimeStart($event, period)" (pan)="onDragTimeStart($event, period)" (panend)="onDragTimeStart($event, period)"></circle>
-                <circle *ngIf="isValidPeriod(period) && period == selectedPeriod" [attr.cx]="getPeriodEndX(period)" cy="25" r="14"
+                <circle *ngIf="selectedPeriod && isValidPeriod(period) && period == selectedPeriod" [attr.cx]="getPeriodEndX(period)" cy="25" r="14"
                     (panstart)="onDragTimeEnd($event, period)" (pan)="onDragTimeEnd($event, period)" (panend)="onDragTimeEnd($event, period)"></circle>
             </g>
         </svg>

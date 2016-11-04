@@ -143,13 +143,21 @@ export class DayTimer implements OnInit {
     };
 
     private periodDeleteIfEmpty = function(period: any) {
+        let self = this;
         let testStart = new Date(period.TimeStart);
         let testEnd = new Date(period.TimeEnd);
         if (testStart.getTime() === testEnd.getTime()) {
             if (period.Id > 0) {
-                this.heatingService.deleteEvent(period.Id).then(function(){
-                    period = {};
-                });
+                self.heatingService.deleteEvent(period)
+                    .subscribe( (res: any) => {
+                        period = {};
+                        self.selectedPeriod = null;
+                    });
+
+
+                // this.heatingService.deleteEvent(period.Id).then(function(){
+                //     period = {};
+                // });
             } else {
                 period = {};
                 this.selectedPeriod = null;
@@ -217,7 +225,7 @@ export class DayTimer implements OnInit {
         formatted = this.datePipe.transform(period.TimeEnd, 'yyyyMMdd HH:mm:ss');
         if (formatted.indexOf(' ') === 6) { formatted = '00' + formatted; } period.TimeEndStr = formatted;
         period.Type = 1;
-        return this.heatingService.saveEvent(period);
+        this.heatingService.saveEvent(period).subscribe();
     };
 
     public addNewEvent = function() {

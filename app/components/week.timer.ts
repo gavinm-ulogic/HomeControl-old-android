@@ -3,6 +3,7 @@ import { OnInit } from '@angular/core';
 import { Logger } from '../services/logger.service';
 import { HeatingService } from '../services/heating.service';
 import { TimedEvent } from '../models/timed.event';
+import { EventGroup } from '../models/event.group';
 
 @Component({
     selector: 'week-timer',
@@ -65,11 +66,6 @@ export class WeekTimer implements OnInit {
 
 
     private getEventSet = function(subjectId: number, isGroup: boolean, eventSet: TimedEvent[], dayList: number[]) {
-
-        if (!eventSet) {
-            let ttttte = 1;
-        }
-
         self = this;
         this.heatingService.getSubjectEvents(subjectId, isGroup)
             .subscribe(
@@ -83,6 +79,13 @@ export class WeekTimer implements OnInit {
                 });
     };
 
+    private loadSubjectGroup = function() {
+        this.heatingService.getGroup(this.subject.GroupId)
+            .subscribe(
+                (group: EventGroup) => this.subjectGroup = group,
+                (err: any) => { this.logger.log(err); });
+    };
+
     ngOnInit() {
         this.logger.log('Week Timer');
     }
@@ -94,6 +97,7 @@ export class WeekTimer implements OnInit {
         }
 
         if (this.subject.GroupId) {
+            this.loadSubjectGroup();
             this.getEventSet(this.subject.GroupId, true, this.subjectGroupEvents, this.subjectGroupDayList);
         }
 
@@ -102,9 +106,6 @@ export class WeekTimer implements OnInit {
         // }
 
         this.newEvent = '';
-
-        //this.getDayLists();
-        // this.heatingService.refreshData();
     }
 
     public addNewEvent = function(region: string, filter: number) {

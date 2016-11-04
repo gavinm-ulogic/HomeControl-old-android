@@ -1,6 +1,7 @@
 <div class="right-view room-detail">
     <div *ngIf="room">
         <div class="title1">{{room.Name}} {{room.Id}}</div>
+        <div *ngIf="roomGroup" class="info-pair">Group: {{roomGroup.Name}}</div>
         <div class="info-pair">Current temp: <span class="">{{room.TempCurrent}}</span>°C</div>
         <div class="info-pair">Target temp: {{room.TempTarget}}°C</div>
         <div class="info-pair">Min temp: {{room.TempMin}}°C</div>

@@ -23,15 +23,6 @@ export class RoomList implements OnInit {
                 });
     };
 
-//   getHeroes() {
-//     this.heroService.getHeroes()
-//                      .subscribe(
-//                        heroes => this.heroes = heroes,
-//                        error =>  this.errorMessage = <any>error);
-//   }
-
-
-
     constructor(
         private logger: Logger,
         public heatingService: HeatingService

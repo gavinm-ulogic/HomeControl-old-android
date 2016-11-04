@@ -40,7 +40,7 @@
         </div>-->
 
        <div *ngIf="subjectGroupEvents.length>0">
-            <div class="title{{this.viewLevel}}">Group Events - {{subjectGroup.Name}}</div>
+            <div class="title{{this.viewLevel}}">Group Events{{(subjectGroup) ? " - " + subjectGroup.Name : ""}}</div>
             <div class="add-event">
                 <svg height="20" width="240">
                     <g (click)="addNewEvent('subjectGroupEvents', 0)">
