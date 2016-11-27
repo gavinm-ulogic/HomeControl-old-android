@@ -18,7 +18,6 @@ import { RoomList }  from './components/room.list';
 import { RoomDetail }  from './components/room.detail';
 
 import { HeatingService } from './services/heating.service';
-import { CommsService } from './services/comms.service';
 import { Logger } from './services/logger.service';
 
 import { AppRoutingModule } from './app.routing.module';
@@ -27,6 +26,6 @@ import { AppRoutingModule } from './app.routing.module';
   declarations: [ HeatClassPipe, AppComponent, WeekTimer, DayTimer, LeftView, RightView, RoomList, RoomDetail ],
   imports: [ BrowserModule, HttpModule, FormsModule, AppRoutingModule ],
   bootstrap: [ AppComponent ],
-  providers: [ {provide: LocationStrategy, useClass: HashLocationStrategy}, DatePipe, Logger, CommsService, HeatingService ]
+  providers: [ {provide: LocationStrategy, useClass: HashLocationStrategy}, DatePipe, Logger, HeatingService ]
 })
 export class AppModule { }

@@ -9,7 +9,6 @@ import { TimedEvent } from '../models/timed.event';
 
 import { Injectable } from '@angular/core';
 import { Logger } from './logger.service';
-import { CommsService } from './comms.service';
 
 @Injectable()
 export class HeatingService {
@@ -17,7 +16,7 @@ export class HeatingService {
     public theRooms: Room[] = [];
     public theEvents: TimedEvent[] = [];
 
-    constructor(private commsService: CommsService, private logger: Logger, private http: Http) {
+    constructor(private logger: Logger, private http: Http) {
         logger.log('HeatingService');
     }
 
