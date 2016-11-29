@@ -39,7 +39,7 @@ export class WeekTimer implements OnInit {
         if (!eventList) { return null; }
         let newList: number[] = null;
         for (let i = 0; i < eventList.length; i++) {
-            let startDate = new Date(eventList[i].TimeStart);
+            let startDate = new Date(eventList[i].timeStart);
             let periodYear = startDate.getFullYear();
             if (!newList) {
                 newList = [periodYear];
@@ -80,7 +80,7 @@ export class WeekTimer implements OnInit {
     };
 
     private loadSubjectGroup = function() {
-        this.heatingService.getGroup(this.subject.GroupId)
+        this.heatingService.getGroup(this.subject.groupId)
             .subscribe(
                 (group: EventGroup) => this.subjectGroup = group,
                 (err: any) => { this.logger.log(err); });
@@ -93,16 +93,16 @@ export class WeekTimer implements OnInit {
     ngOnChanges() {
         this.logger.log('WeekTimer OnChanges');
         if (this.subject) {
-            this.getEventSet(this.subject.Id, false, this.subjectEvents, this.subjectDayList);
+            this.getEventSet(this.subject.id, false, this.subjectEvents, this.subjectDayList);
         }
 
-        if (this.subject.GroupId) {
+        if (this.subject.groupId) {
             this.loadSubjectGroup();
-            this.getEventSet(this.subject.GroupId, true, this.subjectGroupEvents, this.subjectGroupDayList);
+            this.getEventSet(this.subject.groupId, true, this.subjectGroupEvents, this.subjectGroupDayList);
         }
 
         // if (this.parent) {
-        //     this.getEventSet(this.subject.Id, false, this.parentEvents, this.subjectDayList);
+        //     this.getEventSet(this.subject.id, false, this.parentEvents, this.subjectDayList);
         // }
 
         this.newEvent = '';

@@ -17,7 +17,7 @@
             </g>
             <g *ngFor="let period of periods">
                 <rect *ngIf="isValidPeriod(period)" [attr.x]="getPeriodStartX(period)" y="10" [attr.width]="getPeriodWidth(period)" height="30"
-                    class="period" [ngClass]="{'period-selected' : period == selectedPeriod, 'period-new': period.Id <= 0}"
+                    class="period" [ngClass]="{'period-selected' : period == selectedPeriod, 'period-new': period.id <= 0}"
                     (tap)="onTapPeriod($event, period)"
                     (panstart)="onDragPeriod($event, period)" (pan)="onDragPeriod($event, period)" (panend)="onDragPeriod($event, period)"></rect>
                 <circle *ngIf="selectedPeriod && isValidPeriod(period) && period == selectedPeriod" [attr.cx]="getPeriodStartX(period)" cy="25" r="14"

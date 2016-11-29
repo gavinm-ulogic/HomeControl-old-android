@@ -82,8 +82,16 @@ export class HeatingService {
 
     private processRoomData = function(objectList: any[]) {
         if (!objectList) { return null; }
-        for (let i = 0; i < objectList.length; i++) {
-            objectList[i].Summary = (objectList[i].TempCurrent === -999) ? '' : objectList[i].TempCurrent + '°C';
+        for (let room of objectList) {
+            let temp = -999;
+            let cnt = 0;
+            for (let sensor of room.sensors) {
+                temp = (cnt == 0) ? sensor.reading : temp + sensor.reading;
+                cnt++;
+            }
+            if (cnt > 0) { temp = temp / cnt; }
+            room.tempCurrent = room.sensors[0].reading;
+            room.summary = (room.tempCurrent === -999) ? '' : room.tempCurrent + '°C';
         }
         return objectList;
     };
@@ -103,9 +111,9 @@ export class HeatingService {
 
     private filterSubjectEvents = function(subjectId: number, isGroup: boolean) {
         let retArray: Event[] = [];
-        for (let i = 0; i < this.theEvents.length; i++) {
-            if (this.theEvents[i].SubjectId === subjectId && this.theEvents[i].IsGroup === isGroup) {
-                retArray.push(this.theEvents[i]);
+        for (let event of this.theEvents) {
+            if (event.subjectId === subjectId && event.isGroup === isGroup) {
+                retArray.push(event);
             }
         }
         return retArray || {};
@@ -130,7 +138,7 @@ export class HeatingService {
     private getObjectFromList = function(objectList: any, objectId: number) {
         if (!objectList) { return null; }
         for (let i = 0; i < objectList.length; i++) {
-            if (objectList[i].Id === objectId) {
+            if (objectList[i].id === objectId) {
                 return objectList[i];
             }
         }
@@ -189,7 +197,7 @@ export class HeatingService {
         let headers = new Headers({ 'Content-Type': 'application/json' }); // ... Set content type to JSON
         let options = new RequestOptions({ headers: headers }); // Create a request option
 
-        if (object.Id > 0) {
+        if (object.id > 0) {
             return self.http.put(Environment.API_BASE + url, object, options)
                     .map((res: Response) => {
                         object = res.json();
@@ -222,6 +230,6 @@ export class HeatingService {
     };
 
     public deleteEvent = function (eventObj: any) {
-        return this.deleteObject(eventObj.Id, 'events');
+        return this.deleteObject(eventObj.id, 'events');
     };
 }

@@ -21,7 +21,7 @@ export class RoomDetail implements OnInit, OnChanges {
 
 
     private loadRoomGroup = function() {
-        this.heatingService.getGroup(this.room.GroupId)
+        this.heatingService.getGroup(this.room.groupId)
             .subscribe(
                 (group: EventGroup) => this.roomGroup = group,
                 (err: any) => { this.logger.log(err); });
@@ -35,12 +35,8 @@ export class RoomDetail implements OnInit, OnChanges {
         this.logger.log('Room Detail OnChanges');
         if (this.room) {
             this.loadRoomGroup();
-            this.showEvents = this.room.Heaters.length > 0;
+            this.showEvents = this.room.heaters.length > 0;
         }
     };
 
-    // public getGroupName = function(groupId: number): string {
-    //     let group: any = this.heatingService.getGroup(groupId);
-    //     return group ? group.Name : '';
-    // };
 }

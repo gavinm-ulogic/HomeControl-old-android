@@ -42,13 +42,13 @@ export class RoomList implements OnInit {
     }
 
     public getTempClass = function(room: any) {
-        if (room.TempCurrent === -999) { return ''; }
-        let iPos = Math.min(25, Math.max(4, Math.floor(room.TempCurrent)));
+        if (room.tempCurrent === -999) { return ''; }
+        let iPos = Math.min(25, Math.max(4, Math.floor(room.tempCurrent)));
         return 'temperature-' + iPos;
     };
 
     public onSelect = function(room: any) {
-        this.logger.log('RoomList, Room selected: ' + room.Name);
+        this.logger.log('RoomList, Room selected: ' + room.name);
         this.onRoomSelected.emit(room);
     };
 }

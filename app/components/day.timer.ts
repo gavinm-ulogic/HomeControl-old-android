@@ -51,11 +51,11 @@ export class DayTimer implements OnInit {
         /* tslint:enable:no-bitwise */
 
         if (this.newEvent) {
-            this.periods[0].Id = 0;
-            this.periods[0].TimeStart = new Date();
-            this.periods[0].TimeStart.setHours(12, 0, 0, 0);
-            this.periods[0].TimeEnd = new Date();
-            this.periods[0].TimeEnd.setHours(14, 0, 0, 0);
+            this.periods[0].id = 0;
+            this.periods[0].timeStart = new Date();
+            this.periods[0].timeStart.setHours(12, 0, 0, 0);
+            this.periods[0].timeEnd = new Date();
+            this.periods[0].timeEnd.setHours(14, 0, 0, 0);
 
             this.showCommit = true;
             this.dayLabel = 'new';
@@ -94,10 +94,10 @@ export class DayTimer implements OnInit {
     // private setDragPeriod = function(period: any) {
     public setDragPeriod = function(period: any) {
         this.dragPeriod = {};
-        this.dragPeriod.TimeStart = new Date(period.TimeStart);
-        this.dragPeriod.TimeEnd = new Date(period.TimeEnd);
+        this.dragPeriod.timeStart = new Date(period.timeStart);
+        this.dragPeriod.timeEnd = new Date(period.timeEnd);
 
-        this.dayStart = new Date(period.TimeStart);
+        this.dayStart = new Date(period.timeStart);
         this.dayStart.setHours(0, 0, 0, 0);
         this.dayEnd = new Date(this.dayStart);
         this.dayEnd.setHours(23, 59, 59, 999);
@@ -109,25 +109,25 @@ export class DayTimer implements OnInit {
     };
 
     public isValidPeriod(period: any) {
-        if (!period || !period.TimeStart) { return false; }
-        let start: Date = new Date(period.TimeStart);
+        if (!period || !period.timeStart) { return false; }
+        let start: Date = new Date(period.timeStart);
         if (!this.newEvent && this.dayFilter && start.getFullYear() !== this.dayFilter) { return false; }
         return true;
     };
 
     public getPeriodStartX = function(period: any) {
-        let start: Date = new Date(period.TimeStart);
+        let start: Date = new Date(period.timeStart);
         return (this.ctrl_width - 20) / 24 * (start.getHours() + start.getMinutes() / 60) + 10;
     };
 
     public getPeriodEndX = function(period: any) {
-        let end: Date = new Date(period.TimeEnd);
+        let end: Date = new Date(period.timeEnd);
         return (this.ctrl_width - 20) / 24 * (end.getHours() + end.getMinutes() / 60) + 10;
     };
 
     public getPeriodWidth = function(period: any) {
-        let start: Date = new Date(period.TimeStart);
-        let end: Date = new Date(period.TimeEnd);
+        let start: Date = new Date(period.timeStart);
+        let end: Date = new Date(period.timeEnd);
         let p: number = end.getTime() - start.getTime();
         return (p / 3600000) * (this.ctrl_width - 20) / 24;
     };
@@ -136,7 +136,7 @@ export class DayTimer implements OnInit {
         this.logger.log('onTapPeriod');
         if (this.selectedPeriod === period) {
             this.selectedPeriod = null;
-            if (period.Id > 0) { this.commitPeriodUpdate(period); } // don't save new periods here - wait for tick press
+            if (period.id > 0) { this.commitPeriodUpdate(period); } // don't save new periods here - wait for tick press
         } else {
             this.selectedPeriod = period;
         }
@@ -144,10 +144,10 @@ export class DayTimer implements OnInit {
 
     private periodDeleteIfEmpty = function(period: any) {
         let self = this;
-        let testStart = new Date(period.TimeStart);
-        let testEnd = new Date(period.TimeEnd);
+        let testStart = new Date(period.timeStart);
+        let testEnd = new Date(period.timeEnd);
         if (testStart.getTime() === testEnd.getTime()) {
-            if (period.Id > 0) {
+            if (period.id > 0) {
                 self.heatingService.deleteEvent(period)
                     .subscribe( (res: any) => {
                         period = {};
@@ -155,7 +155,7 @@ export class DayTimer implements OnInit {
                     });
 
 
-                // this.heatingService.deleteEvent(period.Id).then(function(){
+                // this.heatingService.deleteEvent(period.id).then(function(){
                 //     period = {};
                 // });
             } else {
@@ -174,8 +174,8 @@ export class DayTimer implements OnInit {
                 this.setDragPeriod(period);
                 break;
             case 'pan':
-                period.TimeStart = new Date(); period.TimeStart.setTime(this.dragPeriod.TimeStart.getTime() + this.convertPixelToMilliseconds($event.deltaX));
-                period.TimeEnd = new Date(); period.TimeEnd.setTime(this.dragPeriod.TimeEnd.getTime() + this.convertPixelToMilliseconds($event.deltaX));
+                period.timeStart = new Date(); period.timeStart.setTime(this.dragPeriod.timeStart.getTime() + this.convertPixelToMilliseconds($event.deltaX));
+                period.timeEnd = new Date(); period.timeEnd.setTime(this.dragPeriod.timeEnd.getTime() + this.convertPixelToMilliseconds($event.deltaX));
                 break;
             case 'panend':
                 this.dragPeriod = null;
@@ -190,9 +190,9 @@ export class DayTimer implements OnInit {
                 this.setDragPeriod(period);
                 break;
             case 'pan':
-                period.TimeStart = new Date(); period.TimeStart.setTime(this.dragPeriod.TimeStart.getTime() + this.convertPixelToMilliseconds($event.deltaX));
-                if (period.TimeStart.getTime() > this.dragPeriod.TimeEnd.getTime()) { period.TimeStart.setTime(this.dragPeriod.TimeEnd.getTime()); }
-                if (period.TimeStart.getTime() < this.dayStart.getTime()) { period.TimeStart.setTime(this.dayStart.getTime()); }
+                period.timeStart = new Date(); period.timeStart.setTime(this.dragPeriod.timeStart.getTime() + this.convertPixelToMilliseconds($event.deltaX));
+                if (period.timeStart.getTime() > this.dragPeriod.timeEnd.getTime()) { period.timeStart.setTime(this.dragPeriod.timeEnd.getTime()); }
+                if (period.timeStart.getTime() < this.dayStart.getTime()) { period.timeStart.setTime(this.dayStart.getTime()); }
                 break;
             case 'panend':
                 this.dragPeriod = null;
@@ -207,9 +207,9 @@ export class DayTimer implements OnInit {
                 this.setDragPeriod(period);
                 break;
             case 'pan':
-                period.TimeEnd = new Date(); period.TimeEnd.setTime(this.dragPeriod.TimeEnd.getTime() + this.convertPixelToMilliseconds($event.deltaX));
-                if (period.TimeEnd.getTime() < this.dragPeriod.TimeStart.getTime()) { period.TimeEnd.setTime(this.dragPeriod.TimeStart.getTime()); }
-                if (period.TimeEnd.getTime() > this.dayEnd.getTime()) { period.TimeEnd.setTime(this.dayEnd.getTime()); }
+                period.timeEnd = new Date(); period.timeEnd.setTime(this.dragPeriod.timeEnd.getTime() + this.convertPixelToMilliseconds($event.deltaX));
+                if (period.timeEnd.getTime() < this.dragPeriod.timeStart.getTime()) { period.timeEnd.setTime(this.dragPeriod.timeStart.getTime()); }
+                if (period.timeEnd.getTime() > this.dayEnd.getTime()) { period.timeEnd.setTime(this.dayEnd.getTime()); }
                 break;
             case 'panend':
                 this.dragPeriod = null;
@@ -220,11 +220,11 @@ export class DayTimer implements OnInit {
 
     public commitPeriodUpdate = function(period: any) {
         let formatted: string;
-        formatted = this.datePipe.transform(period.TimeStart, 'yyyyMMdd HH:mm:ss');
-        if (formatted.indexOf(' ') === 6) { formatted = '00' + formatted; } period.TimeStartStr = formatted;
-        formatted = this.datePipe.transform(period.TimeEnd, 'yyyyMMdd HH:mm:ss');
-        if (formatted.indexOf(' ') === 6) { formatted = '00' + formatted; } period.TimeEndStr = formatted;
-        period.Type = 1;
+        formatted = this.datePipe.transform(period.timeStart, 'yyyyMMdd HH:mm:ss');
+        if (formatted.indexOf(' ') === 6) { formatted = '00' + formatted; } period.timeStartStr = formatted;
+        formatted = this.datePipe.transform(period.timeEnd, 'yyyyMMdd HH:mm:ss');
+        if (formatted.indexOf(' ') === 6) { formatted = '00' + formatted; } period.timeEndStr = formatted;
+        period.type = 1;
         this.heatingService.saveEvent(period).subscribe();
     };
 
@@ -238,10 +238,10 @@ export class DayTimer implements OnInit {
         for (let i = 0; i < this.periods.length; i++) {
             if (this.isValidPeriod(this.periods[i])) {
                 this.logger.log('DayTimer addNewEvent found match event');
-                let matchStart = new Date(this.periods[i].TimeStart);
+                let matchStart = new Date(this.periods[i].timeStart);
                 timeStart.setFullYear(matchStart.getFullYear());
                 timeEnd.setFullYear(matchStart.getFullYear());
-                this.periods.push({Id: 0, SubjectId: this.periods[i].SubjectId, IsGroup: this.periods[i].IsGroup, TimeStart: timeStart, TimeEnd: timeEnd});
+                this.periods.push({id: 0, subjectId: this.periods[i].subjectId, isGroup: this.periods[i].isGroup, timeStart: timeStart, timeEnd: timeEnd});
                 this.showCommit = true;
                 break;
             }
@@ -250,7 +250,7 @@ export class DayTimer implements OnInit {
 
     public handleCommit = function() {
         for (let i = 0; i < this.periods.length; i++) {
-            if (this.periods[i].Id === 0) {
+            if (this.periods[i].id === 0) {
                 if (this.newEvent) {
                     if (this.repeating) {
                         let year = 0;
@@ -258,20 +258,20 @@ export class DayTimer implements OnInit {
                             year = year + (this.dayArray[j].selected ? 1 : 0) * Math.pow(2, j);
                         }
                         if (year === 0) { return; }
-                        this.periods[i].TimeStart.setFullYear(year, 0, 1);
-                        this.periods[i].TimeEnd.setFullYear(year, 0, 1);
+                        this.periods[i].timeStart.setFullYear(year, 0, 1);
+                        this.periods[i].timeEnd.setFullYear(year, 0, 1);
                     } else {
                         let now = new Date();
-                        this.periods[i].TimeStart.setFullYear(now.getFullYear(), now.getMonth(), now.getDate());
-                        this.periods[i].TimeEnd.setFullYear(now.getFullYear(), now.getMonth(), now.getDate());
+                        this.periods[i].timeStart.setFullYear(now.getFullYear(), now.getMonth(), now.getDate());
+                        this.periods[i].timeEnd.setFullYear(now.getFullYear(), now.getMonth(), now.getDate());
                     }
 
-                    let newStart: Date = new Date(this.periods[i].TimeStart.getTime() - this.periods[i].TimeStart.getTimezoneOffset() * 60000);
-                    let newEnd: Date = new Date(this.periods[i].TimeEnd.getTime() - this.periods[i].TimeEnd.getTimezoneOffset() * 60000);
-                    this.periods[i].TimeStart = newStart;
-                    this.periods[i].TimeEnd = newEnd;
+                    let newStart: Date = new Date(this.periods[i].timeStart.getTime() - this.periods[i].timeStart.getTimezoneOffset() * 60000);
+                    let newEnd: Date = new Date(this.periods[i].timeEnd.getTime() - this.periods[i].timeEnd.getTimezoneOffset() * 60000);
+                    this.periods[i].timeStart = newStart;
+                    this.periods[i].timeEnd = newEnd;
                 }
-                this.periods[i].Type = 1;
+                this.periods[i].type = 1;
                 this.commitPeriodUpdate(this.periods[i]);
             }
         }

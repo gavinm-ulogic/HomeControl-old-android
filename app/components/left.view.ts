@@ -28,15 +28,15 @@ export class LeftView implements OnInit {
     }
 
     public onRoomSelected = function(room: any) {
-        this.logger.log('LeftView, Room selected: ' + room.Name);
+        this.logger.log('LeftView, Room selected: ' + room.name);
         this.selectedObjectType = 'room';
-        this.selectedObjectId = room.Id;
+        this.selectedObjectId = room.id;
         this.selectedObject = room;
 
         if (this.dualPane) {
             this.onObjectSelected.emit({type: 'room', room: room});
         } else {
-            this.router.navigate(['room/' + room.Id]);
+            this.router.navigate(['room/' + room.id]);
         }
     };
 

@@ -21,7 +21,7 @@ export class AppComponent implements OnInit {
     }
 
     public onObjectSelected = function(params: any) {
-        this.logger.log('AppComponent, Room selected: ' + params.room.Name);
+        this.logger.log('AppComponent, Room selected: ' + params.room.name);
         this.selectedObjectType = params.type;
         this.selectedObject = params.room;
     };
