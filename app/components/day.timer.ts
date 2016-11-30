@@ -219,13 +219,17 @@ export class DayTimer implements OnInit {
     };
 
     public commitPeriodUpdate = function(period: any) {
+        let self = this;
         let formatted: string;
         formatted = this.datePipe.transform(period.timeStart, 'yyyyMMdd HH:mm:ss');
         if (formatted.indexOf(' ') === 6) { formatted = '00' + formatted; } period.timeStartStr = formatted;
         formatted = this.datePipe.transform(period.timeEnd, 'yyyyMMdd HH:mm:ss');
         if (formatted.indexOf(' ') === 6) { formatted = '00' + formatted; } period.timeEndStr = formatted;
         period.type = 1;
-        this.heatingService.saveEvent(period).subscribe();
+        this.heatingService.saveEvent(period)
+            .subscribe( (res: any) => {
+                period.id = res.id;
+            });
     };
 
     public addNewEvent = function() {

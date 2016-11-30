@@ -198,7 +198,7 @@ export class HeatingService {
         let options = new RequestOptions({ headers: headers }); // Create a request option
 
         if (object.id > 0) {
-            return self.http.put(Environment.API_BASE + url, object, options)
+            return self.http.put(Environment.API_BASE + url + '/' + object.id, object, options)
                     .map((res: Response) => {
                         object = res.json();
                         return object || {};
