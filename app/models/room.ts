@@ -1,5 +1,5 @@
-import { Sensor } from "../models/sensor";
-import { Heater } from "../models/heater";
+import { Sensor } from '../models/sensor';
+import { Heater } from '../models/heater';
 
 export class Room {
     groupId: number;

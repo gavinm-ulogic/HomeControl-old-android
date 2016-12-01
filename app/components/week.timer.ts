@@ -57,24 +57,15 @@ export class WeekTimer implements OnInit {
         return newList;
     };
 
-    // private getDayLists = function() {
-    //     this.subjectDayList = this.getOneDayList(this.subjectEvents);
-    //     this.subjectGroupDayList = this.getOneDayList(this.subjectGroupEvents);
-    //     this.parentDayList = this.getOneDayList(this.parentEvents);
-    //     this.parentGroupDayList = this.getOneDayList(this.parentGroupEvents);
-    // };
-
-
     private getEventSet = function(subjectId: number, isGroup: boolean, eventSet: TimedEvent[], dayList: number[]) {
         self = this;
         this.heatingService.getSubjectEvents(subjectId, isGroup)
             .subscribe(
                 (events: TimedEvent[]) => {
-                    eventSet.push.apply(eventSet, events)
+                    eventSet.push.apply(eventSet, events);
                     dayList.push.apply(dayList, this.getOneDayList(eventSet));
                 },
                 (err: any) => {
-                    // Log errors if any
                     this.logger.log(err);
                 });
     };

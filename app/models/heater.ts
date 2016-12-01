@@ -1,4 +1,4 @@
-import { Sensor } from "../models/sensor";
+import { Sensor } from '../models/sensor';
 
 export class Heater {
     groupId: number;

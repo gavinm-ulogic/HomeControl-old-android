@@ -16,9 +16,8 @@ export class RoomList implements OnInit {
     private loadRoomList = function() {
         this.heatingService.getRooms()
             .subscribe(
-                (rooms: Room[]) => this.roomList = rooms, //Bind to view
+                (rooms: Room[]) => this.roomList = rooms,
                 (err: any) => {
-                    // Log errors if any
                     this.logger.log(err);
                 });
     };
@@ -37,7 +36,7 @@ export class RoomList implements OnInit {
         //     .map((res: Room[]) => {
         //         this.roomList = res;
         //     })
-        //this.heatingService.refreshData();
+        // this.heatingService.refreshData();
 
     }
 

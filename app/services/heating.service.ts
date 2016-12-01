@@ -20,18 +20,9 @@ export class HeatingService {
         logger.log('HeatingService');
     }
 
-    // public refreshDataX = function () {
-    //     let self = this;
-    //     return self.refreshGroups().then(function () {
-    //         return self.refreshRooms().then(function () {
-    //             return self.refreshEvents();
-    //         });
-    //     });
-    // };
-
     public refreshData = function () {
         let self = this;
-        //return self.refreshAllData();
+        // return self.refreshAllData();
     };
 
     // public refreshAllData = function () {
@@ -54,7 +45,6 @@ export class HeatingService {
     // };
 
     private handleError (error: Response | any) {
-        // In a real world app, we might use a remote logging infrastructure
         let errMsg: string;
         if (error instanceof Response) {
             const body = error.json() || '';
@@ -86,7 +76,7 @@ export class HeatingService {
             let temp = -999;
             let cnt = 0;
             for (let sensor of room.sensors) {
-                temp = (cnt == 0) ? sensor.reading : temp + sensor.reading;
+                temp = (cnt === 0) ? sensor.reading : temp + sensor.reading;
                 cnt++;
             }
             if (cnt > 0) { temp = temp / cnt; }
@@ -164,30 +154,30 @@ export class HeatingService {
                     })
                     .catch(self.handleError);
         }
-    }
+    };
 
     public getRoom = function (roomId: number, noChache: boolean) {
         return this.getObject(this.getRooms, this.theRooms, roomId, noChache);
-    }
+    };
 
     public getGroup = function (groupId: number, noChache: boolean) {
         return this.getObject(this.getGroups, this.theGroups, groupId, noChache);
-    }
+    };
 
     public getEvent = function (eventId: number, noChache: boolean) {
         return this.getObject(this.getEvents, this.theEvents, eventId, noChache);
-    }
+    };
 
     private handleError2(error: any): Promise<any> {
         console.error('An error occurred', error);
         // this.logger.error('An error occurred:' + error);
         return Promise.reject(error.message || error);
-    }
+    };
 
     private handleResponse(response: any): Promise<any> {
         let test: any = response.json();
         return Promise.resolve(test);
-    }
+    };
 
 
     private saveObject = function (object: any, url: string) {
@@ -213,7 +203,7 @@ export class HeatingService {
                 this.logger.log(error);
             });
         }
-    }
+    };
 
     private deleteObject = function (objectId: number, url: string) {
         if (!objectId) { return null; }
@@ -223,7 +213,7 @@ export class HeatingService {
             }, function (error: any) {
                 this.logger.log(error);
             });
-    }
+    };
 
     public saveEvent = function (eventObj: any) {
         return this.saveObject(eventObj, 'events');
