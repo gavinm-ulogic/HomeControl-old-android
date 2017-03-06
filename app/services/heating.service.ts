@@ -44,20 +44,40 @@ export class HeatingService {
     //         });
     // };
 
-    private handleError (error: Response | any) {
-        let errMsg: string;
-        if (error instanceof Response) {
-            const body = error.json() || '';
-            const err = body.error || JSON.stringify(body);
-            errMsg = `${error.status} - ${error.statusText || ''} ${err}`;
-        } else {
-            errMsg = error.message ? error.message : error.toString();
-        }
-        console.error(errMsg);
-        return Observable.throw(errMsg);
-    }
+    // private handleError (error: Response | any) {
+    //     let errMsg: string;
+    //     if (error instanceof Response) {
+    //         const body = error.json() || '';
+    //         const err = body.error || JSON.stringify(body);
+    //         errMsg = `${error.status} - ${error.statusText || ''} ${err}`;
+    //     } else {
+    //         errMsg = error.message ? error.message : error.toString();
+    //     }
+    //     this.logger.error(errMsg);
+    //     return Observable.throw(errMsg);
+    // }
 
-    private getObjectListFromServer = function(objectList: any[], url: string, dataProcessor: Function) {
+  private handleError(error: Response | any): Observable<any> {
+
+    let errMsg: string;
+    if (error instanceof Response) {
+      let body: any;
+      try {
+        body = error.json() || '';
+      } catch (newErr) {
+        body = error.statusText;
+      }
+      const err = body.error || JSON.stringify(body);
+      errMsg = `${error.status} - ${error.statusText || ''} ${err}`;
+    } else {
+      errMsg = error.message ? error.message : error.toString();
+    }
+    this.logger.error(errMsg);
+    return Observable.throw(errMsg);
+  }
+
+
+    private getObjectListFromServer(objectList: any[], url: string, dataProcessor: Function) {
         let self = this;
         return self.http.get(Environment.API_BASE + url)
                 .map((res: Response) => {
@@ -67,7 +87,7 @@ export class HeatingService {
                     if (dataProcessor) { dataProcessor.call(self, objectList); }
                     return objectList || {};
                 })
-                .catch(this.handleError);
+                .catch(error => self.handleError(error));
     };
 
     private processRoomData = function(objectList: any[]) {
@@ -180,7 +200,7 @@ export class HeatingService {
     };
 
 
-    private saveObject = function (object: any, url: string) {
+    private saveObject(object: any, url: string) {
         if (!object) { return null; }
         let self = this;
 
@@ -193,7 +213,7 @@ export class HeatingService {
                         object = res.json();
                         return object || {};
                     })
-                    .catch(self.handleError);
+                    .catch(error => self.handleError(error));
         } else {
             return this.http.post(Environment.API_BASE + url, object, options)
                 .map((res: Response) => {
@@ -205,14 +225,13 @@ export class HeatingService {
         }
     };
 
-    private deleteObject = function (objectId: number, url: string) {
+    private deleteObject(objectId: number, url: string) {
+        let self = this;
         if (!objectId) { return null; }
         return this.http.delete(Environment.API_BASE + url + '/' + objectId)
             .map((res: Response) => {
                    return;
-            }, function (error: any) {
-                this.logger.log(error);
-            });
+            }).catch(error => self.handleError(error));
     };
 
     public saveEvent = function (eventObj: any) {
